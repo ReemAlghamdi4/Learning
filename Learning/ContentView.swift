@@ -1,10 +1,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    // ❌ Remove @EnvironmentObject
-    // @EnvironmentObject var appState: AppState
-    
-    // ✅ Add a regular property to hold the passed-in appState
+
     let appState: AppState
     
     // Use @StateObject for the ViewModel
@@ -12,17 +9,14 @@ struct ContentView: View {
     
     let discSize: CGFloat = 109
 
-    // ✅ Modify init to accept AppState and initialize the ViewModel correctly
     init(appState: AppState) {
         self.appState = appState
-        // Initialize the StateObject, passing the received appState to the ViewModel's init
         _viewModel = StateObject(wrappedValue: ContentViewModel(appState: appState))
     }
     
     var body: some View {
         NavigationStack {
-            ZStack {
-                Color.black.ignoresSafeArea()
+
                 
                 VStack(alignment: .leading, spacing: 0) {
                     
@@ -38,11 +32,11 @@ struct ContentView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Hello Learner")
                             .font(.system(size: 34, weight: .bold))
-                            .foregroundColor(.white)
+                            .foregroundColor(.primary)
                         
                         Text("This app will help you learn everyday!")
                             .font(.system(size: 17))
-                            .foregroundColor(.white.opacity(0.6))
+                            .foregroundColor(.primary.opacity(0.6))
                     }
                     
                     Spacer().frame(height: 24)
@@ -63,7 +57,7 @@ struct ContentView: View {
                                 StyleGuide.selectedPill
                                 Text("Start learning")
                                     .font(.system(size: 18, weight: .semibold))
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.primary)
                             }
                             .frame(width: 182, height: 48)
                             .contentShape(RoundedRectangle(cornerRadius: 1000, style: .continuous))
@@ -76,9 +70,7 @@ struct ContentView: View {
                 .padding(.horizontal, 16)
                 .padding(.bottom, 16)
             }
-            // ❌ Remove .environmentObject(appState)
-            // ❌ Remove .onAppear related to viewModel.appState
-        }
+
     }
     
     // (headerIcon remains the same)
@@ -118,7 +110,7 @@ struct ContentView: View {
                 .shadow(color: Color.orange.opacity(0.25), radius: 20, x: 0, y: 10)
             
             Circle()
-                .fill(Color.white.opacity(1.20))
+                .fill(Color.primary.opacity(1.20))
                 .frame(width: discSize, height: discSize)
                 .blur(radius: 0.25)
                 .blendMode(.overlay)
@@ -127,7 +119,7 @@ struct ContentView: View {
                         .padding(2)
                         .blendMode(.destinationOut)
                 )
-                .shadow(color: Color.white.opacity(0.45), radius: 0.25, x: 2, y: 2)
+                .shadow(color: Color.primary.opacity(0.45), radius: 0.25, x: 2, y: 2)
             
             Image(systemName: "flame.fill")
                 .resizable()

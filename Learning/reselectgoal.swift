@@ -17,9 +17,7 @@ struct reselectgoal: View {
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                Color.black.ignoresSafeArea()
-                
+
                 VStack(alignment: .leading, spacing: 0) {
                     
                     HStack {
@@ -30,13 +28,13 @@ struct reselectgoal: View {
                                 StyleGuide.graniteCircle
                                 Image(systemName: "chevron.left")
                                     .font(.title3.weight(.bold))
-                                    .foregroundStyle(Color.white.opacity(0.90))
+                                    .foregroundStyle(Color.primary.opacity(0.90))
                             }
                         }
                         
                         Spacer()
                         Text("Learning Goal")
-                            .foregroundColor(.white)
+                            .foregroundColor(.primary)
                             .font(.system(size: 17, weight: .bold))
                         Spacer()
                         
@@ -49,7 +47,7 @@ struct reselectgoal: View {
                                 StyleGuide.selectedPill
                                 Image(systemName: "checkmark")
                                     .font(.title3.weight(.bold))
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.primary)
                             }
                             .frame(width: 44, height: 44)
                             .clipShape(Circle())
@@ -82,4 +80,4 @@ struct reselectgoal: View {
             .navigationBarHidden(true)
         }
     }
-}
+

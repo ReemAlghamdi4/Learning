@@ -16,18 +16,17 @@ struct GoalCreationFormView: View {
         // Group all the related inputs together
         VStack(alignment: .leading, spacing: 20) {
             
-            // --- Goal Prompt and TextField ---
             VStack(alignment: .leading, spacing: 8) {
                 Text("I want to learn")
                     .font(.system(size: 22))
-                    .foregroundColor(.white)
+                    .foregroundColor(.primary)
                 
                 VStack(spacing: 0) {
                     // Use the 'goalText' binding
                     TextField("Swift", text: $goalText)
-                        .foregroundColor(.white)
+                        .foregroundColor(.primary)
                         .padding(.vertical, 10)
-                        .background(Color.black)
+                  
                     
                     Rectangle()
                         .fill(Color.gray.opacity(0.7))
@@ -39,10 +38,9 @@ struct GoalCreationFormView: View {
             VStack(alignment: .leading, spacing: 12) {
                 Text("I want to learn it in a")
                     .font(.system(size: 22))
-                    .foregroundColor(.white)
+                    .foregroundColor(.primary)
                 
                 HStack(spacing: 8) {
-                    // These functions now use the bindings
                     durationButton(.week)
                     durationButton(.month)
                     durationButton(.year)
@@ -72,7 +70,7 @@ struct GoalCreationFormView: View {
                 
                 Text(duration.rawValue)
                     .font(.system(size: 17, weight: .semibold))
-                    .foregroundColor(.white)
+                    .foregroundColor(.primary)
             }
             .frame(width: 97, height: 48)
             .contentShape(RoundedRectangle(cornerRadius: 1000, style: .continuous))

@@ -28,10 +28,16 @@ class AppState: ObservableObject {
     // This boolean will control whether to show the goal setup or the calendar view.
     @Published var isGoalActive: Bool = false
 
+    // Activity timestamps for enforcement
+    @Published var lastLearnedDate: Date?
+    @Published var lastFrozenDate: Date?
+
     private let userDefaultsKey = "learningAppState"
 
     init() {
         loadState()
+        // Enforce the 32-hour rule on startup
+        enforceStreakRuleNow()
     }
     
     // MARK: - Computed Properties
@@ -61,6 +67,8 @@ class AppState: ObservableObject {
         self.startDate = Date()
         self.learnedStreak = 0
         self.loggedDays = [:]
+        self.lastLearnedDate = nil
+        self.lastFrozenDate = nil
         
         let now = Date()
         switch duration {
@@ -86,9 +94,11 @@ class AppState: ObservableObject {
 
         if status == .learned {
             learnedStreak += 1
+            lastLearnedDate = Date()
         } else if status == .frozen {
             guard freezesLeft > 0 else { return }
             freezesLeft -= 1
+            lastFrozenDate = Date()
         }
 
         loggedDays[todayString] = status
@@ -105,7 +115,48 @@ class AppState: ObservableObject {
         totalFreezes = 0
         loggedDays = [:]
         isGoalActive = false
+        lastLearnedDate = nil
+        lastFrozenDate = nil
         UserDefaults.standard.removeObject(forKey: userDefaultsKey)
+    }
+
+    // MARK: - 32-hour Enforcement
+
+    // Resets the streak if there has been no learned or freeze in the last 32 hours.
+    func enforceStreakRuleNow(reference now: Date = Date()) {
+        // If no active goal, nothing to enforce
+        guard isGoalActive else { return }
+        
+        // If streak already zero, nothing to do
+        guard learnedStreak > 0 else { return }
+
+        // Find most recent activity (learned or frozen)
+        let lastActivity = maxDate(lastLearnedDate, lastFrozenDate)
+        
+        // If user never learned or froze yet, and streak > 0 (shouldn't happen normally), reset defensively
+        guard let lastActivityDate = lastActivity else {
+            learnedStreak = 0
+            saveState()
+            return
+        }
+        
+        let elapsed = now.timeIntervalSince(lastActivityDate)
+        let threshold: TimeInterval = 32 * 60 * 60 // 32 hours in seconds
+        
+        if elapsed > threshold {
+            // More than 32 hours with no learned/freeze -> reset
+            learnedStreak = 0
+            saveState()
+        }
+    }
+    
+    private func maxDate(_ a: Date?, _ b: Date?) -> Date? {
+        switch (a, b) {
+        case (nil, nil): return nil
+        case (let d?, nil): return d
+        case (nil, let d?): return d
+        case (let d1?, let d2?): return max(d1, d2)
+        }
     }
 
     // MARK: - Data Persistence
@@ -119,7 +170,7 @@ class AppState: ObservableObject {
     private func saveState() {
         let encoder = JSONEncoder()
         if let encodedData = try? encoder.encode(loggedDays) {
-            let data: [String: Any] = [
+            var data: [String: Any] = [
                 "goal": goal,
                 "duration": duration.rawValue,
                 "startDate": startDate ?? Date(),
@@ -130,6 +181,13 @@ class AppState: ObservableObject {
                 "loggedDays": encodedData,
                 "isGoalActive": isGoalActive
             ]
+            // Only include dates if they exist; store as TimeInterval (Double)
+            if let lastLearnedDate {
+                data["lastLearnedDate"] = lastLearnedDate.timeIntervalSince1970
+            }
+            if let lastFrozenDate {
+                data["lastFrozenDate"] = lastFrozenDate.timeIntervalSince1970
+            }
             UserDefaults.standard.set(data, forKey: userDefaultsKey)
         }
     }
@@ -155,5 +213,18 @@ class AppState: ObservableObject {
         }
         
         self.isGoalActive = data["isGoalActive"] as? Bool ?? false
+        
+        // Read timestamps as Double and convert back to Date
+        if let lastLearnedTS = data["lastLearnedDate"] as? Double {
+            self.lastLearnedDate = Date(timeIntervalSince1970: lastLearnedTS)
+        } else {
+            self.lastLearnedDate = nil
+        }
+        if let lastFrozenTS = data["lastFrozenDate"] as? Double {
+            self.lastFrozenDate = Date(timeIntervalSince1970: lastFrozenTS)
+        } else {
+            self.lastFrozenDate = nil
+        }
     }
 }
+
