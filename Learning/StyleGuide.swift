@@ -101,7 +101,7 @@ struct StyleGuide {
                             startPoint: .topLeading,
                             endPoint: .bottom
                         ),
-                        lineWidth: 1.5
+                        lineWidth: 1
                     )
             )
             .overlay(
@@ -124,14 +124,30 @@ struct StyleGuide {
 
     static var graniteCircle: some View {
         Circle()
-            .fill(Color(white: 0.2, opacity: 0.5))
-            .overlay(
-                Circle()
-                    .strokeBorder(Color.white.opacity(0.3), lineWidth: 1.0)
-            )
-            .frame(width: 44, height: 44)
+                // 1. The "Gray Effect" (tint)
+                .fill(Color(white: 0.1, opacity: 0.2))
+                
+                // 2. The Glass (blur)
+                .background(.regularMaterial)
+                
+                // 3. Clip the glass effect to the circle
+                .clipShape(Circle())
+                
+                // 4. The "Glossy White Stroke"
+                .overlay(
+                    Circle()
+                        .strokeBorder(
+                            // Use a gradient for the "glossy" look
+                            LinearGradient(
+                                colors: [.gray, .black.opacity(0.3)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 1.5 // Made slightly thicker to see the gloss
+                        )
+                )
+                .frame(width: 44, height: 44)
     }
-    
     static var mainCardBackground: some View {
         RoundedRectangle(cornerRadius: 13, style: .continuous)
             .fill(Color(white: 0.1).opacity(0.6))

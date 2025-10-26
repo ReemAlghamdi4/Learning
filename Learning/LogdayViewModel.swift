@@ -145,6 +145,13 @@ final class LogdayViewModel: ObservableObject {
     func setNewGoal() {
         appState.setNewGoal()
     }
+    
+    // Restart with same goal and duration immediately
+    func restartSameGoal() {
+        let existingGoal = appState.goal.isEmpty ? "Swift" : appState.goal
+        let existingDuration = appState.duration
+        appState.startGoal(goal: existingGoal, duration: existingDuration)
+    }
 
     // MARK: - Timer Logic
     func onAppear() {
@@ -214,4 +221,3 @@ extension Date {
         }
     }
 }
-

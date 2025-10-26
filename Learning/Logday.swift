@@ -93,7 +93,7 @@ struct Logday: View {
                         .padding(.horizontal, 16)
                 } else {
                     dailyStatusView
-                        .padding(.horizontal, 16)
+                      .padding(.horizontal, 16)
                 }
                 
                 Spacer()
@@ -142,7 +142,7 @@ struct Logday: View {
             }
             
             Button {
-                viewModel.setNewGoal()
+                viewModel.restartSameGoal()
             } label: {
                 Text("Set same learning goal and duration")
                     .font(.system(size: 16))
@@ -272,6 +272,14 @@ struct Logday: View {
                             let dateString = appState.dateToString(date)
                             let status = appState.loggedDays[dateString]
                             
+                            let numberColor: Color = {
+                                switch status {
+                                case .learned: return Color.orangeBASIC
+                                case .frozen:  return Color.blueButton
+                                case .none:    return .primary
+                                }
+                            }()
+                            
                             VStack(spacing: 4) {
                                 Text(date.formatted(.dateTime.weekday()).uppercased())
                                     .font(.caption)
@@ -283,7 +291,7 @@ struct Logday: View {
                                         status: status,
                                         isToday: Calendar.current.isDateInToday(date)
                                                              ))
-                                    .foregroundColor(.primary)
+                                    .foregroundColor(numberColor)
                             }
                             .frame(maxWidth: .infinity)
                             .onTapGesture {
@@ -310,6 +318,9 @@ struct Logday: View {
                         }
                         .pickerStyle(.wheel)
                         .frame(maxWidth: .infinity, minHeight: 140)
+                        .onChange(of: tempMonth) { _ in
+                            applyAndClose()
+                        }
                         
                         Picker("Year", selection: $tempYear) {
                             let current = Calendar.current.component(.year, from: Date())
@@ -319,6 +330,9 @@ struct Logday: View {
                         }
                         .pickerStyle(.wheel)
                         .frame(maxWidth: .infinity, minHeight: 140)
+                        .onChange(of: tempYear) { _ in
+                            applyAndClose()
+                        }
                     }
                     #else
                     HStack {
@@ -327,52 +341,40 @@ struct Logday: View {
                                 Text(DateFormatter().monthSymbols[m - 1]).tag(m)
                             }
                         }
+                        .onChange(of: tempMonth) { _ in
+                            applyAndClose()
+                        }
                         Picker("Year", selection: $tempYear) {
                             let current = Calendar.current.component(.year, from: Date())
                             ForEach((current - 10)...(current + 10), id: \.self) { y in
                                 Text("\(y)").tag(y)
                             }
                         }
+                        .onChange(of: tempYear) { _ in
+                            applyAndClose()
+                        }
                     }
                     #endif
-                    
-                    HStack {
-                        Button(role: .cancel) {
-                            withAnimation(.spring(response: 0.3, dampingFraction: 0.9)) {
-                                isDropdownOpen = false
-                            }
-                        } label: {
-                            Text("Cancel")
-                                .foregroundColor(.secondary)
-                                .frame(maxWidth: .infinity)
-                        }
-                        
-                        Button {
-                            var comps = DateComponents()
-                            comps.year = tempYear
-                            comps.month = tempMonth
-                            comps.day = 1
-                            if let newDate = Calendar.current.date(from: comps) {
-                                let start = LogdayViewModel.startOfMonth(for: newDate)
-                                selectedDate = start
-                                currentDate = start
-                            }
-                            withAnimation(.spring(response: 0.3, dampingFraction: 0.9)) {
-                                isDropdownOpen = false
-                            }
-                        } label: {
-                            Text("Done")
-                                .foregroundColor(Color.orangeBASIC)
-                                .fontWeight(.semibold)
-                                .frame(maxWidth: .infinity)
-                        }
-                    }
-                    .padding(.top, 4)
                 }
                 .padding(12)
                 .background(
                     StyleGuide.mainCardBackground
                 )
+            }
+        }
+        
+        private func applyAndClose() {
+            var comps = DateComponents()
+            comps.year = tempYear
+            comps.month = tempMonth
+            comps.day = 1
+            if let newDate = Calendar.current.date(from: comps) {
+                let start = LogdayViewModel.startOfMonth(for: newDate)
+                selectedDate = start
+                currentDate = start
+            }
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.9)) {
+                isDropdownOpen = false
             }
         }
         
@@ -560,10 +562,19 @@ struct Logday: View {
                 let isToday = calendar.isDateInToday(date)
                 let isSelected = calendar.isDate(date, inSameDayAs: selectedDate)
                 
+                // Number color based on status (no opacity) for in-month days; keep dimmed for out-of-month days
+                let numberColorInMonth: Color = {
+                    switch status {
+                    case .learned: return Color.orangeBASIC
+                    case .frozen:  return Color.blueButton
+                    case .none:    return .primary
+                    }
+                }()
+                
                 VStack(spacing: 6) {
                     Text("\(calendar.component(.day, from: date))")
                         .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(isInDisplayedMonth ? .primary : .gray.opacity(0.5))
+                        .foregroundColor(isInDisplayedMonth ? numberColorInMonth : .gray.opacity(0.5))
                         .frame(width: 38, height: 38)
                         .background(
                             CalendarDayBackground(
