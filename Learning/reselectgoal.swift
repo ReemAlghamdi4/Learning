@@ -71,7 +71,7 @@ struct reselectgoal: View {
             }
             .alert("Update Learning goal", isPresented: $viewModel.showingConfirmationAlert) {
                 Button("Dismiss", role: .cancel) { }
-                Button("Update", role: .destructive) {
+                Button("Update") {
                     viewModel.executeUpdate { dismiss() }
                 }
             } message: {

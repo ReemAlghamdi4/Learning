@@ -222,13 +222,10 @@ struct StyleGuide {
             .frame(width: 246, height: 48)
     }
     
-    // --- ✅ Corrected Property ---
     static var learndeButtonCircle: some View {
         let shape = Circle()
-        // --- ✅ Added explicit return and fixed modifier chaining ---
         return shape
             .fill(
-                // ✅ Corrected Gradient Syntax (removed extra space/newline)
                 RadialGradient(
                     gradient: Gradient(colors: [
                         Color.black,
@@ -240,7 +237,6 @@ struct StyleGuide {
                     endRadius: 100
                 )
             )
-            // ✅ Correctly chained .strokeBorder to the shape
             .overlay(
                 shape.strokeBorder( // Apply strokeBorder directly to the shape
                     AngularGradient(
@@ -257,13 +253,11 @@ struct StyleGuide {
                     lineWidth: 2
                 )
             )
-            // ✅ Correctly chained .shadow after other modifiers
             .shadow(color: Color.orange.opacity(0.25), radius: 20, x: 0, y: 10)
     }
     
     static var frozenDayCircle: some View {
             let shape = Circle()
-            // --- ✅ Added explicit return ---
             return shape
                 .fill(
                     RadialGradient(

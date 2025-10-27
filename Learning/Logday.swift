@@ -105,9 +105,7 @@ struct Logday: View {
         .onDisappear {
             viewModel.onDisappear()
         }
-#if os(iOS)
         .navigationBarHidden(true)
-#endif
     }
     
     

@@ -36,7 +36,6 @@ class AppState: ObservableObject {
 
     init() {
         loadState()
-        // Enforce the 32-hour rule on startup
         enforceStreakRuleNow()
     }
     
