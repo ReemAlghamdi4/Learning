@@ -50,13 +50,10 @@ struct Logday: View {
                     }
                 }
                 .padding(.horizontal, 16)
-#if os(iOS)
                 .padding(.top, 8)
-#endif
                 
                 Spacer().frame(height: 27)
                 
-                // Main content card (unchanged styling/frames)
                 VStack(alignment: .leading, spacing: 16) {
                     WeekView(
                         currentDate: $viewModel.weekReferenceDate,

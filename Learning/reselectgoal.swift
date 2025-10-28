@@ -4,10 +4,8 @@ struct reselectgoal: View {
 
     @Environment(\.dismiss) var dismiss
     
-    // ✅ Add a regular property
     let appState: AppState
     
-    // Use @StateObject for the ViewModel
     @StateObject private var viewModel: ReselectGoalViewModel
     
     init(appState: AppState) {

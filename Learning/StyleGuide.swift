@@ -266,7 +266,7 @@ struct StyleGuide {
                             Color(red: 0, green: 0, blue: 0.05).opacity(0.1), // Subtle blue-ish black
                             Color.blue.opacity(0.04)
                         ]),
-                        center: .bottomTrailing, // ✅ Verified syntax
+                        center: .bottomTrailing,
                         startRadius: 0,
                         endRadius: 100
                     )

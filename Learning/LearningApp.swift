@@ -1,12 +1,11 @@
 import SwiftUI
 
-@main // Marks this as the app's starting point
+@main 
 struct Learning_journeyApp: App {
 
     @StateObject var appState = AppState()
     @Environment(\.scenePhase) private var scenePhase
 
-    // Defines the app's user interface structure
     var body: some Scene {
         WindowGroup { // The main window scene for your app
             MainView()
@@ -15,10 +14,19 @@ struct Learning_journeyApp: App {
         }
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
-                // Enforce the 32-hour rule whenever the app becomes active
                 appState.enforceStreakRuleNow()
             }
         }
     }
 }
+struct MainView: View {
+    @EnvironmentObject var appState: AppState
 
+    var body: some View {
+        if appState.isGoalActive {
+            Logday(appState: appState)
+        } else {
+            ContentView(appState: appState)
+        }
+    }
+}
